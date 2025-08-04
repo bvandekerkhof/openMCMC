@@ -1,11 +1,13 @@
 """Test baseclass sampler"""
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from functools import partial
+
 import jax
 from jax import numpy as jnp
-from jax.tree_util import register_pytree_node_class
 from jax import random
-from functools import partial
+# from jax.tree_util import register_pytree_node_class
 
 from openmcmc.jax.sampler.base_class_model import ExampleModel
 
@@ -47,7 +49,6 @@ class BaseSampler(ABC):
     #     # aux_data = {'param': self.param}
     #     # return (children, aux_data)
 
-
     # def tree_unflatten():
     #     # return cls(*children, **aux_data)
 
@@ -55,9 +56,8 @@ class BaseSampler(ABC):
 # @register_pytree_node_class
 # @dataclass
 
-@partial(jax.tree_util.register_dataclass,
-                   data_fields=['model'],
-                   meta_fields=['param'])
+
+@partial(jax.tree_util.register_dataclass, data_fields=["model"], meta_fields=["param"])
 @dataclass
 class OneSampler(BaseSampler):
     """Normal-Normal conditional sampling (exploiting conjugacy)."""
@@ -84,7 +84,7 @@ class OneSampler(BaseSampler):
 
         # Add the 1 to get a new key to work with later
         # current_key, *subkeys = random.split(current_key, n_param+1)
-        subkeys = random.split(current_key, n_param+1)
+        subkeys = random.split(current_key, n_param + 1)
         current_key = subkeys[0]
         subkeys = subkeys[1:]
         # TODO Not sure if we need to explicitely delete these keys?
@@ -92,12 +92,12 @@ class OneSampler(BaseSampler):
         # print(random_values)
         # random_values = 0
         del subkeys
-            
+
         current_state[self.param] = current_state[self.param] + b + random_values
         # new_state = current_state[self.param] + b + random_values
         # print(f"updated state: {current_state}")
         return current_state, current_key
-    
+
     # def tree_flatten(self):
     #     children = None
     #     aux_data = None
@@ -106,7 +106,7 @@ class OneSampler(BaseSampler):
     # @classmethod
     # def tree_unflatten(cls, aux_data, children):
     #     return cls(*children)
-    
+
     # def tree_flatten(self):
     #     children = self.model
     #     aux_data = {'param': self.param}

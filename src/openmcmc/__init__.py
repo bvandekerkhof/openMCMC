@@ -4,12 +4,4 @@
 
 """Main MCMC module."""
 
-__all__ = [
-    "distribution",
-    "sampler",
-    "gmrf",
-    "mcmc",
-    "model",
-    "parameter",
-    "jax"
-]
+__all__ = ["distribution", "sampler", "gmrf", "mcmc", "model", "parameter", "jax"]

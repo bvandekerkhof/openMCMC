@@ -199,63 +199,6 @@ class NormalNormal(MCMCSampler):
             )
 
         return current_state
-    
-_sample_normal_normal_jax(current_state=current_state, param = self.param)
-# TODO just go through this line by line and see how far we can get, keep track of what we need to change.
-def _sample_normal_normal_jax(self, current_state: dict, param: str) -> dict:
-    """Generate a sample from a Gaussian-Gaussian conditional distribution.
-
-    For a Gaussian-Gaussian conditional distribution, the parameters are as follows:
-        Conditional precision:
-            Q = P + sum_k [A_k'*W_k*A_k]
-        Conditional mean:
-            b = P*m + sum_k [A_k'*W_k*(y_k - d_k)]
-            mu = Q^{-1} * b
-    Where the parameters are as defined in the class docstring.
-
-    If the supplied response parameter has a second dimension, these are interpreted as repeated draws from the same
-    distribution, and are thus summed. The multiplication of the precision matrix by num_replicates is handled by
-    the grad_log_p() function of the corresponding distribution.
-
-    Args:
-        current_state (dict): dictionary containing the current sampler state.
-
-    Returns:
-        (dict): state with updated value for self.param.
-
-    """
-    n_param = current_state[param].shape[0]
-    Q = sparse.csc_matrix((n_param, n_param))
-    b = np.zeros(shape=(n_param, 1))
-    for key, dist in self.model.items():
-        Q_rsp = dist.precision.predictor(current_state)
-        if self._is_response[key]:
-            Q += Q_rsp
-            b += Q_rsp @ dist.mean.predictor(current_state)
-        else:
-            _, Q_dist = dist.grad_log_p(current_state, param)
-            Q += Q_dist
-            if isinstance(dist.mean, Identity):
-                b += Q_rsp @ np.sum(current_state[key], axis=1, keepdims=True)
-            else:
-                predictor_exclude = dist.mean.predictor_conditional(current_state, term_to_exclude=param)
-                A = current_state[dist.mean.form[param]]
-                b += A.T @ Q_rsp @ (current_state[key] - predictor_exclude)
-
-    dist_param = self.model[param]
-
-    if dist_param.domain_response_lower is None and dist_param.domain_response_upper is None:
-        current_state[param] = gmrf.sample_normal_canonical(b, Q)
-    else:
-        current_state[param] = gmrf.gibbs_canonical_truncated_normal(
-            b,
-            Q,
-            x=current_state[param],
-            lower=dist_param.domain_response_lower,
-            upper=dist_param.domain_response_upper,
-        )
-
-    return current_state
 
 @dataclass
 class NormalGamma(MCMCSampler):
