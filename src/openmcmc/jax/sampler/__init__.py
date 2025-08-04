@@ -2,14 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""Main MCMC module."""
+"""Sampler module."""
 
 __all__ = [
-    "distribution",
     "sampler",
-    "gmrf",
-    "mcmc",
-    "model",
-    "parameter",
-    "jax"
 ]
