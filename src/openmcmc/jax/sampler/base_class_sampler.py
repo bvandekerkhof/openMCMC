@@ -67,6 +67,7 @@ class OneSampler(BaseSampler):
 
         Args:
             current_state (dict): dictionary containing the current sampler state.
+            current_key (jax.Array): jax array with current random key
 
         Returns:
             (dict): state with updated value for self.param.

@@ -17,15 +17,18 @@ class ExampleModel(ABC):
     """Example model base class
 
     Attributes:
-       mean (Union[str, Identity, LinearCombination, MixtureParameterVector]): mean parameter (of class Parameter).
-       precision (Union[str, Identity, ScaledMatrix, MixtureParameterMatrix]): precision parameter (of class Parameter).
+       q_factor (jnp.array): Array to use for calculation.
 
     """
 
     q_factor: jnp.ndarray
 
     def get_b_factor(self, state: jnp.array):
-        """Get b factor"""
+        """Get b factor example method
+        
+        Args:
+            state (jnp.array): State vector
+        """
         # if jnp.sum(state) > 10:
         #     b_factor = jnp.array([1., 1.])
         # else:

@@ -57,8 +57,14 @@ def sample_normal(
 
     if L is None:
         L = cholesky(Q)
+    
+    # result = solve(L.T, z).reshape(z.shape) + mu
 
-    return solve(L.T, z).reshape(z.shape) + mu
+    result = L
+
+    # TODO fix this back to only returning the result when done testing
+
+    return result, z, L
 
 
 def sample_truncated_normal(
